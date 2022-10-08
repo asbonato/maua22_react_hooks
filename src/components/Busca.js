@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { InputText } from 'primereact/inputtext'
 import axios from 'axios'
+import { Button } from "primereact/button"
 
 const Busca = () => {
     const [termoDeBusca, setTermoDeBusca] = useState('React')
@@ -23,9 +24,18 @@ const Busca = () => {
         )
         setResultados(data.query.search)
     }
-    //e chamamos a seguir
-    if (termoDeBusca){
+    if (termoDeBusca && !resultados.length){
         fazBusca()
+    } else {
+        const timeoutID =   setTimeout(() => {
+            //e chamamos a seguir
+            if (termoDeBusca){
+                fazBusca()
+            }
+        }, 1000)
+        return () => {
+            clearTimeout(timeoutID)
+        }
     }
     }, [termoDeBusca])
     return (
@@ -44,10 +54,17 @@ const Busca = () => {
                         <div
                             className="border bottom border border-1 border-400 p2 text-center front-bold">
                                 {resultado.title}
+                                <span>
+                                    <Button icon="pi pi-send"
+                                    className="ml-2 p-button-rounded p-button-secondary"
+                                    onClick={() => window.open(
+                                        `https://en.wikipedia.org?curid=${resultado.pageid}`
+                                    )}/>
+                                </span>
                         </div>
                         {/** padding */}
                         <div className="p-2">
-                            {resultado.snippet}
+                            <spam dangerouslySetInnerHTML={{__html: resultado.snippet}}></spam>
                         </div>
                     </div>
                 ))
